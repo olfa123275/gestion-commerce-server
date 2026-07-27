@@ -1,0 +1,48 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+
+
+
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Produit {
+  id          Int          @id @default(autoincrement())
+  nom         String
+  prix        Float
+  stock       Int          @default(0)
+  codeQR      String       @unique
+  createdAt   DateTime     @default(now())
+  lignesVente LigneVente[]
+}
+
+model Client {
+  id        Int      @id @default(autoincrement())
+  nom       String
+  telephone String?
+  createdAt DateTime @default(now())
+  ventes    Vente[]
+}
+
+model Vente {
+  id          Int          @id @default(autoincrement())
+  client      Client       @relation(fields: [clientId], references: [id])
+  clientId    Int
+  date        DateTime     @default(now())
+  lignesVente LigneVente[]
+}
+
+model LigneVente {
+  id         Int     @id @default(autoincrement())
+  vente      Vente   @relation(fields: [venteId], references: [id])
+  venteId    Int
+  produit    Produit @relation(fields: [produitId], references: [id])
+  produitId  Int
+  quantite   Int
+  prixUnite  Float
+}

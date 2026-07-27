@@ -1,0 +1,39 @@
+-- CreateTable
+CREATE TABLE "Produit" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "nom" TEXT NOT NULL,
+    "prix" REAL NOT NULL,
+    "stock" INTEGER NOT NULL DEFAULT 0,
+    "codeQR" TEXT NOT NULL,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- CreateTable
+CREATE TABLE "Client" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "nom" TEXT NOT NULL,
+    "telephone" TEXT,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- CreateTable
+CREATE TABLE "Vente" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "clientId" INTEGER NOT NULL,
+    "date" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT "Vente_clientId_fkey" FOREIGN KEY ("clientId") REFERENCES "Client" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+-- CreateTable
+CREATE TABLE "LigneVente" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "venteId" INTEGER NOT NULL,
+    "produitId" INTEGER NOT NULL,
+    "quantite" INTEGER NOT NULL,
+    "prixUnite" REAL NOT NULL,
+    CONSTRAINT "LigneVente_venteId_fkey" FOREIGN KEY ("venteId") REFERENCES "Vente" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT "LigneVente_produitId_fkey" FOREIGN KEY ("produitId") REFERENCES "Produit" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Produit_codeQR_key" ON "Produit"("codeQR");
