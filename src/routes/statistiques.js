@@ -12,13 +12,20 @@ router.get('/', async (req, res) => {
     include: { vente: true, produit: true },
   });
 
-  // Calcul du CA du jour et du mois
+  // Récupérer tous les retours
+  const retours = await prisma.retour.findMany();
+
+  // Calcul du CA du jour et du mois (ventes moins retours)
   let caJour = 0;
   let caMois = 0;
   for (const ligne of lignes) {
     const montant = ligne.prixUnite * ligne.quantite;
     if (ligne.vente.date >= debutJour) caJour += montant;
     if (ligne.vente.date >= debutMois) caMois += montant;
+  }
+  for (const retour of retours) {
+    if (retour.date >= debutJour) caJour -= retour.montant;
+    if (retour.date >= debutMois) caMois -= retour.montant;
   }
 
   // Produits les plus vendus (top 5 par quantité)
@@ -44,13 +51,17 @@ router.get('/', async (req, res) => {
     const finJour = new Date(jour);
     finJour.setDate(finJour.getDate() + 1);
 
-    const caCeJour = lignes
+    const ventesCeJour = lignes
       .filter((l) => l.vente.date >= jour && l.vente.date < finJour)
       .reduce((somme, l) => somme + l.prixUnite * l.quantite, 0);
 
+    const retoursCeJour = retours
+      .filter((r) => r.date >= jour && r.date < finJour)
+      .reduce((somme, r) => somme + r.montant, 0);
+
     graphique7jours.push({
       date: jour.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }),
-      ca: caCeJour,
+      ca: ventesCeJour - retoursCeJour,
     });
   }
 

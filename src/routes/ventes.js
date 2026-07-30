@@ -6,7 +6,7 @@ router.get('/', async (req, res) => {
   const ventes = await prisma.vente.findMany({
     include: {
       client: true,
-      lignesVente: { include: { produit: true } },
+      lignesVente: { include: { produit: true, retours: true } },
       facture: true,
     },
   });
