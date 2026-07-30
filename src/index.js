@@ -1,21 +1,33 @@
 const express = require('express');
 const cors = require('cors');
+const { verifierToken } = require('./middleware/auth');
+
+const authRouter = require('./routes/auth');
 const produitsRouter = require('./routes/produits');
 const clientsRouter = require('./routes/clients');
 const ventesRouter = require('./routes/ventes');
-const app = express();
-const PORT = 5000;
 const categoriesRouter = require('./routes/categories');
 const fournisseursRouter = require('./routes/fournisseurs');
+const statistiquesRouter = require('./routes/statistiques');
+const parametresRouter = require('./routes/parametres');
+
+const app = express();
+const PORT = 5000;
 
 app.use(cors());
 app.use(express.json());
 
-app.use('/api/produits', produitsRouter);
-app.use('/api/clients', clientsRouter);
-app.use('/api/ventes', ventesRouter);
-app.use('/api/categories', categoriesRouter);
-app.use('/api/fournisseurs', fournisseursRouter);
+// Route publique (pas besoin d'être connecté)
+app.use('/api/auth', authRouter);
+
+// Routes protégées (nécessitent un token valide)
+app.use('/api/produits', verifierToken, produitsRouter);
+app.use('/api/clients', verifierToken, clientsRouter);
+app.use('/api/ventes', verifierToken, ventesRouter);
+app.use('/api/categories', verifierToken, categoriesRouter);
+app.use('/api/fournisseurs', verifierToken, fournisseursRouter);
+app.use('/api/statistiques', verifierToken, statistiquesRouter);
+app.use('/api/parametres', verifierToken, parametresRouter);
 
 app.get('/', (req, res) => {
   res.json({ message: 'API Gestion Commerce en ligne 🚀' });
