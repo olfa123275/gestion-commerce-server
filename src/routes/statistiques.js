@@ -12,10 +12,28 @@ router.get('/', async (req, res) => {
     include: { vente: true, produit: true },
   });
 
-  // Récupérer tous les retours
-  const retours = await prisma.retour.findMany();
+  // Récupérer tous les retours, avec la ligne de vente et la vente associées
+  const retours = await prisma.retour.findMany({
+    include: { ligneVente: { include: { vente: true } } },
+  });
 
-  // Calcul du CA du jour et du mois (ventes moins retours)
+  // Regrouper les lignes par vente pour calculer le total de chaque vente
+  const totalParVente = {};
+  for (const ligne of lignes) {
+    const montant = ligne.prixUnite * ligne.quantite;
+    totalParVente[ligne.venteId] = (totalParVente[ligne.venteId] || 0) + montant;
+  }
+
+  // Calcule l'impact réel en caisse d'un retour (proportionnel à ce qui a été payé)
+  const impactCaisse = (retour) => {
+    const vente = retour.ligneVente.vente;
+    const totalVente = totalParVente[vente.id] || 0;
+    if (totalVente === 0) return 0;
+    const ratioPaye = vente.montantPaye / totalVente; // 1 = payé entier, 0 = crédit total
+    return retour.montant * Math.min(ratioPaye, 1);
+  };
+
+  // Calcul du CA du jour et du mois (ventes moins retours, au prorata du payé)
   let caJour = 0;
   let caMois = 0;
   for (const ligne of lignes) {
@@ -24,10 +42,10 @@ router.get('/', async (req, res) => {
     if (ligne.vente.date >= debutMois) caMois += montant;
   }
   for (const retour of retours) {
-    if (retour.date >= debutJour) caJour -= retour.montant;
-    if (retour.date >= debutMois) caMois -= retour.montant;
+    const impact = impactCaisse(retour);
+    if (retour.date >= debutJour) caJour -= impact;
+    if (retour.date >= debutMois) caMois -= impact;
   }
-
   // Produits les plus vendus (top 5 par quantité)
   const quantitesParProduit = {};
   for (const ligne of lignes) {
@@ -57,7 +75,7 @@ router.get('/', async (req, res) => {
 
     const retoursCeJour = retours
       .filter((r) => r.date >= jour && r.date < finJour)
-      .reduce((somme, r) => somme + r.montant, 0);
+      .reduce((somme, r) => somme + impactCaisse(r), 0);
 
     graphique7jours.push({
       date: jour.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }),
