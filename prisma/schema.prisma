@@ -66,13 +66,14 @@ model Vente {
 }
 
 model LigneVente {
-  id        Int     @id @default(autoincrement())
-  vente     Vente   @relation(fields: [venteId], references: [id])
+  id        Int      @id @default(autoincrement())
+  vente     Vente    @relation(fields: [venteId], references: [id])
   venteId   Int
-  produit   Produit @relation(fields: [produitId], references: [id])
+  produit   Produit  @relation(fields: [produitId], references: [id])
   produitId Int
   quantite  Int
   prixUnite Float
+  retours   Retour[]
 }
 
 model Facture {
@@ -90,4 +91,14 @@ model ParametresCommerce {
   typeCommerce      String?
   devise            String @default("TND")
   seuilAlerteDefaut Int    @default(5)
+}
+
+
+model Retour {
+  id           Int        @id @default(autoincrement())
+  ligneVente   LigneVente @relation(fields: [ligneVenteId], references: [id])
+  ligneVenteId Int
+  quantite     Int
+  montant      Float
+  date         DateTime   @default(now())
 }

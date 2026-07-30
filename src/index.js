@@ -10,6 +10,7 @@ const categoriesRouter = require('./routes/categories');
 const fournisseursRouter = require('./routes/fournisseurs');
 const statistiquesRouter = require('./routes/statistiques');
 const parametresRouter = require('./routes/parametres');
+const retoursRouter = require('./routes/retours');
 
 const app = express();
 const PORT = 5000;
@@ -28,6 +29,7 @@ app.use('/api/categories', verifierToken, categoriesRouter);
 app.use('/api/fournisseurs', verifierToken, fournisseursRouter);
 app.use('/api/statistiques', verifierToken, statistiquesRouter);
 app.use('/api/parametres', verifierToken, parametresRouter);
+app.use('/api/retours', verifierToken, retoursRouter);
 
 app.get('/', (req, res) => {
   res.json({ message: 'API Gestion Commerce en ligne 🚀' });

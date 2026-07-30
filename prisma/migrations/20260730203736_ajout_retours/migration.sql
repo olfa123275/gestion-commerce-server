@@ -1,0 +1,9 @@
+-- CreateTable
+CREATE TABLE "Retour" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "ligneVenteId" INTEGER NOT NULL,
+    "quantite" INTEGER NOT NULL,
+    "montant" REAL NOT NULL,
+    "date" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT "Retour_ligneVenteId_fkey" FOREIGN KEY ("ligneVenteId") REFERENCES "LigneVente" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+);
