@@ -24,4 +24,18 @@ router.delete('/:id', async (req, res) => {
   res.status(204).send();
 });
 
+
+
+router.put('/:id', async (req, res) => {
+  const { id } = req.params;
+  const { nom } = req.body;
+  const categorie = await prisma.categorie.update({
+    where: { id: parseInt(id) },
+    data: { nom },
+  });
+  res.json(categorie);
+});
+
+
+
 module.exports = router;

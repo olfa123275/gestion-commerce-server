@@ -21,4 +21,26 @@ router.delete('/:id', async (req, res) => {
   res.status(204).send();
 });
 
+
+
+
+
+
+
+
+router.put('/:id', async (req, res) => {
+  const { id } = req.params;
+  const { nom, telephone, adresse } = req.body;
+  const fournisseur = await prisma.fournisseur.update({
+    where: { id: parseInt(id) },
+    data: { nom, telephone, adresse },
+  });
+  res.json(fournisseur);
+});
+
+
+
+
+
+
 module.exports = router;

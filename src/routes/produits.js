@@ -27,4 +27,37 @@ router.post('/', async (req, res) => {
   res.status(201).json(produit);
 });
 
+
+
+// Modifier un produit
+router.put('/:id', async (req, res) => {
+  const { id } = req.params;
+  const { nom, prix, stock, codeQR, seuilAlerte, categorieId, fournisseurId } = req.body;
+  const produit = await prisma.produit.update({
+    where: { id: parseInt(id) },
+    data: {
+      nom,
+      prix,
+      stock,
+      codeQR,
+      seuilAlerte,
+      categorieId: categorieId || null,
+      fournisseurId: fournisseurId || null,
+    },
+  });
+  res.json(produit);
+});
+
+// Supprimer un produit
+router.delete('/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    await prisma.produit.delete({ where: { id: parseInt(id) } });
+    res.status(204).send();
+  } catch (err) {
+    res.status(400).json({ erreur: 'Impossible de supprimer : ce produit a des ventes associées' });
+  }
+});
+
+
 module.exports = router;
