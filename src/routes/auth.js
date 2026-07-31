@@ -28,6 +28,10 @@ router.post('/login', async (req, res) => {
     return res.status(401).json({ erreur: 'Email ou mot de passe incorrect' });
   }
 
+  if (!utilisateur.actif) {
+    return res.status(403).json({ erreur: 'Ce compte a été désactivé' });
+  }
+
   const motDePasseValide = await bcrypt.compare(motDePasse, utilisateur.motDePasse);
   if (!motDePasseValide) {
     return res.status(401).json({ erreur: 'Email ou mot de passe incorrect' });

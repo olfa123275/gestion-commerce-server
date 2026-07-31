@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { verifierToken } = require('./middleware/auth');
+const { verifierToken, verifierAdmin } = require('./middleware/auth');
 
 const authRouter = require('./routes/auth');
 const produitsRouter = require('./routes/produits');
@@ -10,6 +10,7 @@ const categoriesRouter = require('./routes/categories');
 const fournisseursRouter = require('./routes/fournisseurs');
 const statistiquesRouter = require('./routes/statistiques');
 const parametresRouter = require('./routes/parametres');
+const utilisateursRouter = require('./routes/utilisateurs');
 const retoursRouter = require('./routes/retours');
 
 const app = express();
@@ -29,6 +30,7 @@ app.use('/api/categories', verifierToken, categoriesRouter);
 app.use('/api/fournisseurs', verifierToken, fournisseursRouter);
 app.use('/api/statistiques', verifierToken, statistiquesRouter);
 app.use('/api/parametres', verifierToken, parametresRouter);
+app.use('/api/utilisateurs', verifierToken, verifierAdmin, utilisateursRouter);
 app.use('/api/retours', verifierToken, retoursRouter);
 
 app.get('/', (req, res) => {
