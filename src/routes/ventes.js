@@ -39,6 +39,14 @@ router.post('/', async (req, res) => {
         data: { stock: { decrement: ligne.quantite } },
       });
 
+      await tx.mouvementStock.create({
+        data: {
+          produitId: ligne.produitId,
+          type: 'VENTE',
+          quantite: -ligne.quantite,
+        },
+      });
+
       total += produit.prix * ligne.quantite;
     }
 

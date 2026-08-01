@@ -32,6 +32,14 @@ router.post('/', async (req, res) => {
         data: { stock: { increment: quantite } },
       });
 
+      await tx.mouvementStock.create({
+        data: {
+          produitId: ligne.produitId,
+          type: 'RETOUR',
+          quantite: quantite,
+        },
+      });
+
       return retour;
     });
 
