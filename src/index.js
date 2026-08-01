@@ -1,3 +1,5 @@
+
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const { verifierToken, verifierAdmin } = require('./middleware/auth');
@@ -39,8 +41,12 @@ app.use('/api/mouvements-stock', verifierToken, mouvementsStockRouter);
 app.use('/api/cloture', verifierToken, clotureRouter);
 app.use('/api/export', verifierToken, exportRouter);
 
-app.get('/', (req, res) => {
-  res.json({ message: 'API Gestion Commerce en ligne 🚀' });
+const path = require('path');
+
+app.use(express.static(path.join(__dirname, '..', 'public')));
+
+app.get('/{*splat}', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
 });
 
 app.listen(PORT, () => {
