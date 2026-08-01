@@ -14,6 +14,7 @@ const utilisateursRouter = require('./routes/utilisateurs');
 const retoursRouter = require('./routes/retours');
 const mouvementsStockRouter = require('./routes/mouvementsStock');
 const clotureRouter = require('./routes/cloture');
+const exportRouter = require('./routes/export');
 
 const app = express();
 const PORT = 5000;
@@ -36,6 +37,7 @@ app.use('/api/utilisateurs', verifierToken, verifierAdmin, utilisateursRouter);
 app.use('/api/retours', verifierToken, retoursRouter);
 app.use('/api/mouvements-stock', verifierToken, mouvementsStockRouter);
 app.use('/api/cloture', verifierToken, clotureRouter);
+app.use('/api/export', verifierToken, exportRouter);
 
 app.get('/', (req, res) => {
   res.json({ message: 'API Gestion Commerce en ligne 🚀' });
