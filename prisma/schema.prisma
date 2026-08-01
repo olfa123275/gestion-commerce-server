@@ -115,3 +115,14 @@ model MouvementStock {
   motif     String?
   date      DateTime @default(now())
 }
+
+model ClotureCaisse {
+  id            Int      @id @default(autoincrement())
+  date          DateTime // le jour concerné (à minuit)
+  totalEncaisse Float
+  nombreVentes  Int
+  cloturePar    String   // nom de l'utilisateur qui a clôturé
+  createdAt     DateTime @default(now())
+
+  @@unique([date])
+}
